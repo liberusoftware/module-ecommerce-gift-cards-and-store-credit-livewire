@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schemas.liberu.dev/module/v1.json",
+    "name": "ecommerce-gift-cards-and-store-credit-livewire",
+    "display_name": "Gift Cards and Store Credit Livewire",
+    "description": "The one place in this fleet where hostile input meets a bearer credential: a box a shopper types a gift card code into. The code is an action argument rather than a property, so it is never component state, never dehydrated back to the browser, never flashed and never logged. Every refusal — wrong code, disabled, expired, wrong currency, short, conflicting, rate limited — is the same sentence. The amount is priced by the host on the server and no browser can name it.",
+    "version": "0.1.0",
+    "category": "presentation",
+    "provider": "Liberu\\Ecommerce\\GiftCardsAndStoreCredit\\Livewire\\GiftCardsAndStoreCreditLivewireServiceProvider",
+    "requires": {
+        "php": "^8.5",
+        "laravel": "^13.0",
+        "packages": {
+            "liberusoftware/ecommerce-gift-cards-and-store-credit": "^0.1"
+        }
+    },
+    "capabilities": [
+        "ecommerce.gift-cards-and-store-credit.livewire"
+    ],
+    "default_enabled": false,
+    "features": [
+        "A gift card code that is an action argument and never a property",
+        "No component property a code could be hydrated into",
+        "Every refusal answers with one identical sentence",
+        "One shape as well as one message: the state after every refusal is the same",
+        "A code that survives no further than the call that spends it",
+        "Proved by a test that walks the component's whole serialised state",
+        "Rate limited per actor by the domain and per IP by this package",
+        "A throttled attempt answers exactly as a wrong code does",
+        "Only the last four characters and the balance are ever shown back",
+        "Every public property locked, enforced by reflection over every registered component",
+        "No exceptions list on that rule, because there is nothing to except",
+        "The amount priced by the host on the server, on the request that spends",
+        "No money property on any component, locked or otherwise",
+        "An idempotency key derived from the step, so a reload cannot debit twice",
+        "A permanent conflict refuses and mints nothing",
+        "A signed-in customer's own balances, folded from the ledger",
+        "No balance lookup by code, because that is an oracle over the code space",
+        "Live regions announcing every outcome, and a labelled field",
+        "Registered by resolveMissingComponent, never by a namespace map"
+    ]
+}

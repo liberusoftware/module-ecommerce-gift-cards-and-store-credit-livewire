@@ -1,0 +1,49 @@
+{
+    "name": "liberusoftware/ecommerce-gift-cards-and-store-credit-livewire",
+    "description": "Livewire 4 storefront surface for liberusoftware/ecommerce-gift-cards-and-store-credit: one box a shopper types a gift card code into, priced entirely by the server, where every refusal answers identically and the code is never a property, never a flash message, never a log line and never in the payload that comes back.",
+    "type": "liberu-module",
+    "license": "MIT",
+    "version": "0.1.0",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/liberusoftware/module-ecommerce-gift-cards-and-store-credit"
+        }
+    ],
+    "require": {
+        "php": "^8.5",
+        "laravel/framework": "^13.0",
+        "livewire/livewire": "^4.0",
+        "liberusoftware/ecommerce-gift-cards-and-store-credit": "^0.1"
+    },
+    "require-dev": {
+        "liberusoftware/ecommerce-gift-cards-and-store-credit": "^0.1",
+        "liberusoftware/package-testbench": "^1.7",
+        "pestphp/pest": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Liberu\\Ecommerce\\GiftCardsAndStoreCredit\\Livewire\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Liberu\\Ecommerce\\GiftCardsAndStoreCredit\\Livewire\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "liberu": {
+            "name": "ecommerce-gift-cards-and-store-credit-livewire"
+        }
+    },
+    "scripts": {
+        "test": "pest"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

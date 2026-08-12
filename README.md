@@ -1,84 +1,101 @@
-# Ecommerce: Gift Cards and Store Credit Livewire
+# Gift Cards and Store Credit — Livewire
 
-> This optional Livewire 4 presentation package provides interactive server-driven components for exactly one independent domain module. Components coordinate public queries/actions and presentation state; they do not own persistence, authorization decisions, tenancy, business rules, or theme identity. The package has no dependency on application Ap
+Livewire 4 storefront surface for
+[`liberusoftware/ecommerce-gift-cards-and-store-credit`](https://github.com/liberusoftware/module-ecommerce-gift-cards-and-store-credit).
 
-[Software](https://liberusoftware.com) ·
-[Hosting](https://liberuhosting.com) ·
-[Services](https://liberuservices.com) ·
-[Liberu Group](https://liberugroup.com)
+**One box a shopper types a gift card code into, and one list of the balances
+they already own.** That is the whole package, and the shortness of the list is
+the design.
 
-![PHP](https://img.shields.io/badge/PHP-8.5-777BB4?logo=php&logoColor=white) ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white) ![Livewire](https://img.shields.io/badge/Livewire-4-FB70A9)
-[![Latest release](https://img.shields.io/github/v/release/liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire?sort=semver)](https://github.com/liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire/releases/latest) [![Tests](https://github.com/liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire/actions/workflows/tests.yml)
+A gift card code is a bearer credential: whoever holds it holds the money. This
+is the only surface in the fleet where hostile input meets one, so it is built as
+an attack surface that happens to also be a feature.
 
-## Features
+---
 
-- Fully compatible with **Laravel 13**, **PHP 8.5**, and **Pest 5**.
-- Built following the domain-driven design guidelines of the Liberu architecture.
-- Reusable, presenting a clean public contract and boundaries.
-- Adheres to the strict database, security, and authorization standards of Liberu.
+## What it does
 
-## Requirements
+| Component | Alias | |
+| --- | --- | --- |
+| `ApplyGiftCard` | `module-ecommerce-gift-cards-and-store-credit::apply` | Spend a card against a purchase your application priced |
+| `MyBalances` | `module-ecommerce-gift-cards-and-store-credit::balances` | A signed-in customer's own cards and store credit, folded from the ledger |
 
-- **PHP 8.5**
-- **Composer 2**
-- A supported database (e.g. MySQL, PostgreSQL, SQLite)
-
-## Quick start
-
-To install this package via Composer, run:
-
-```bash
-composer require liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire
+```blade
+<livewire:module-ecommerce-gift-cards-and-store-credit::apply :reference="$checkout->reference" />
+<livewire:module-ecommerce-gift-cards-and-store-credit::balances />
 ```
 
-## Documentation
+---
 
-- [Liberu Main Documentation](https://github.com/liberusoftware/documentation)
-- [Architecture & Standards Index](https://github.com/liberusoftware/documentation/tree/main/architecture)
+## The five decisions worth knowing before you read the code
 
-## Related Liberu Projects
+**The code is a method argument, not a property.** Every public property carries
+`#[Locked]` with no exceptions list, and the one thing a shopper types is not on
+the list because it is not a property at all. It arrives as a call parameter,
+lives for one stack frame, and is never dehydrated back into the page. A test
+walks every property's value, the rendered HTML, the session, the error bag and
+the log — with the domain's telemetry switched on — and asserts the code is in
+none of them. [`docs/domain.md` §2](docs/domain.md).
 
-| Project | Repository | Purpose |
-| --- | --- | --- |
-| **Boilerplate** | [liberusoftware/boilerplate-laravel](https://github.com/liberusoftware/boilerplate-laravel) | Shared Laravel application foundation and reference composition |
-| **CMS** | [liberu-cms/cms-laravel](https://github.com/liberu-cms/cms-laravel) | Structured content, publishing, media, multisite, and headless delivery |
-| **CRM** | [liberu-crm/crm-laravel](https://github.com/liberu-crm/crm-laravel) | Customer data, sales, marketing, service, and customer success |
-| **Billing** | [liberu-billing/billing-laravel](https://github.com/liberu-billing/billing-laravel) | Products, subscriptions, invoicing, payments, and provisioning |
-| **Accounting** | [liberu-accounting/accounting-laravel](https://github.com/liberu-accounting/accounting-laravel) | Ledgers, banking, tax, expenses, close, and financial reporting |
-| **Ecommerce** | [liberu-ecommerce/ecommerce-laravel](https://github.com/liberu-ecommerce/ecommerce-laravel) | Catalog, checkout, orders, fulfillment, returns, B2B, and omnichannel commerce |
-| **Control Panel** | [liberu-control-panel/control-panel-laravel](https://github.com/liberu-control-panel/control-panel-laravel) | Hosting, infrastructure, DNS, mail, databases, backups, and security operations |
-| **Automation** | [liberu-automation/automation-laravel](https://github.com/liberu-automation/automation-laravel) | Governed workflows, provider-neutral AI, approvals, and connectors |
+**Every refusal is one sentence and one shape.** An unknown code, a stopped card,
+an expired card, a foreign currency, an empty card, a short card, a throttled
+presenter and a conflicting second card all answer identically — and leave the
+component in an identical state, because what a browser receives is the state and
+not only the sentence. Anything more specific tells a guesser their code is real.
 
-## Security
+**There is no *check your balance* box, on purpose.** The domain publishes no
+lookup by code except spending one, and a second one built here would be an
+oracle with its own throttle and its own timing profile to keep aligned. A
+customer sees their balances signed in; a bearer sees what is left the moment they
+spend. [`docs/domain.md` §3](docs/domain.md).
 
-Please do not report security vulnerabilities through public GitHub issues.
-Follow our [Security Policy](https://github.com/liberusoftware/documentation/blob/main/architecture/SECURITY.md) for private reporting and supported versions.
+**No money value is ever a client input.** The component is mounted with an
+opaque reference and your application prices it, server-side, on the request that
+spends. No component here has a property even *named* for money.
 
-## License
+**The idempotency key is derived from the step, not drawn at random.** A reload
+therefore replays the first movement instead of debiting the card a second time —
+which matters here more than elsewhere, because this package cannot read the
+ledger for a card nobody has typed a code for yet. A conflict refuses and mints
+nothing. [`docs/domain.md` §5](docs/domain.md).
 
-This project is open-source software. You may use, modify, and distribute it
-under the terms described in [LICENSE.md](LICENSE.md).
+---
 
-The linked license text is authoritative; this summary is not legal advice.
+## Rate limits
 
-## Feedback and contributing
+| Bucket | Keyed by | Enforced by | Default |
+| --- | --- | --- | --- |
+| Actor | signed-in customer, else session | the domain | 5 / minute |
+| Address | `request()->ip()` | this package | 20 / minute |
 
-Feedback and contributions are welcome. You can help by reporting reproducible
-bugs, proposing focused enhancements, improving documentation or translations,
-and submitting tested code changes.
+Either alone is walked around: a session limit is five attempts per cookie jar,
+and an address limit alone locks out a building. Neither can be switched off from
+configuration. [`docs/adoption.md` §4](docs/adoption.md).
 
-Before contributing, please read [CONTRIBUTING.md](https://github.com/liberusoftware/documentation/blob/main/standards/CONTRIBUTING.md) and our
-[Code of Conduct](https://github.com/liberusoftware/documentation/blob/main/architecture/CODE_OF_CONDUCT.md). Search existing issues first, then use
-the appropriate issue template. Pull requests should explain the problem and
-approach, remain focused, include or update tests, pass the required workflows,
-and document user-visible or breaking changes.
+---
 
-## Contributors
+## Installing
 
-Thank you to everyone who helps improve Liberu.
+Nothing boots on install. The package ships no `extra.laravel.providers`; the
+module manager registers it only when the deployment names it.
 
-<a href="https://github.com/liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire" alt="Contributors to liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire">
-</a>
+```dotenv
+MODULES_ENABLED=…,ecommerce-gift-cards-and-store-credit,ecommerce-gift-cards-and-store-credit-livewire
+```
 
-[View the full contributors graph](https://github.com/liberusoftware/module-ecommerce-gift-cards-and-store-credit-livewire/graphs/contributors).
+The domain package is not on Packagist, so your application needs its VCS
+`repositories` entry, and its adoption guide has a decision about your existing
+plaintext codes that has to be made first.
+[`docs/adoption.md`](docs/adoption.md).
+
+---
+
+## Docs
+
+- [`docs/domain.md`](docs/domain.md) — every decision, and the reasoning
+- [`docs/adoption.md`](docs/adoption.md) — what a host has to write
+- [`docs/runbook.md`](docs/runbook.md) — what breaks and what to do
+
+## Licence
+
+MIT.
