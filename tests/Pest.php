@@ -74,10 +74,21 @@ function theRefusal(): string
     return __(Provider::NAMESPACE.'::gift-cards.apply.refused');
 }
 
-/** @return list<class-string<Component>> */
+/**
+ * Keyed, and not only for the readable test names.
+ *
+ * A bare two-element list of strings is a valid PHP callable, and Pest hands a
+ * dataset row straight to the test — so `[A::class, B::class]` is called as
+ * `A::B()` rather than iterated. Keys make it an array and nothing else.
+ *
+ * @return array<string, class-string<Component>>
+ */
 function everyComponent(): array
 {
-    return [ApplyGiftCard::class, MyBalances::class];
+    return [
+        'the apply control' => ApplyGiftCard::class,
+        'the balances list' => MyBalances::class,
+    ];
 }
 
 /** Every PHP file this package ships in `src/`. */

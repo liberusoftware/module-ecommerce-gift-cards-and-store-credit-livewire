@@ -200,10 +200,9 @@ it('renders no field at all when the deployment has not said what anything costs
 
 it('answers a reference it cannot price exactly as one that was never issued', function () {
     // Nothing is registered for this reference, so it is not distinguishable
-    // from somebody else's basket — which is the point. Asserted on the refusal
-    // rather than on a class name: what matters is that mounting stops, not
-    // which of Symfony's HTTP exceptions carries it.
-    expect(fn () => applyTo('CHK-SOMEBODY-ELSES'))->toThrow(Exception::class);
+    // from somebody else's basket — which is the point. A reference that prices
+    // to nothing and one that was never issued are the same 404.
+    applyTo('CHK-SOMEBODY-ELSES')->assertStatus(404);
 });
 
 it('refuses when the purchase stops being priceable between mount and submit', function () {

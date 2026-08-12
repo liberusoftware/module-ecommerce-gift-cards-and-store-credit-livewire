@@ -67,7 +67,10 @@ it('registers the namespace by resolver rather than by namespace map', function 
     // namespace, which forecloses a `Pages\` this package may yet want, and does
     // not answer the case above at all.
     foreach (everySourceFile() as $file) {
-        expect((string) file_get_contents($file))->not->toContain('addNamespace');
+        // The call, not the word: the provider's docblock explains at length why
+        // `addNamespace()` is the wrong half of this registration, and that
+        // explanation is worth more than the grep is.
+        expect((string) file_get_contents($file))->not->toContain('Livewire::addNamespace');
     }
 
     expect((string) file_get_contents(new ReflectionClass(Provider::class)->getFileName()))

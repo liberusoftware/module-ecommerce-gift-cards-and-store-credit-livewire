@@ -4,6 +4,7 @@ use Liberu\Ecommerce\GiftCardsAndStoreCredit\Actions\DisableAccount;
 use Liberu\Ecommerce\GiftCardsAndStoreCredit\Livewire\Components\MyBalances;
 use Liberu\Ecommerce\GiftCardsAndStoreCredit\Livewire\GiftCardsAndStoreCreditLivewireServiceProvider as Provider;
 use Liberu\Ecommerce\GiftCardsAndStoreCredit\Livewire\Tests\Fixtures\IdStub;
+use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 
 /*
@@ -17,7 +18,7 @@ beforeEach(function (): void {
     IdStub::$answer = null;
 });
 
-function balances(): Livewire\Features\SupportTesting\Testable
+function balances(): Testable
 {
     return Livewire::test(MyBalances::class);
 }
